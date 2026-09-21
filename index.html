@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="module">
+            import {handCombinations} from "./src/utils/combinations.js";
+            const response = await fetch("./config/cards.json");
+            const deck = await response.json();
+
+            document.getElementById("output").textContent = handCombinations("3+2",5,deck); 
+        </script>
+    </head>
+    <body>
+        <a id="output"></a>
+    </body>
+</html>
