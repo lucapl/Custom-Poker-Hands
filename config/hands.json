@@ -1,0 +1,44 @@
+{
+    "hands":[
+        {
+            "name":"High Card",
+            "combination":"1-card"
+        },
+        {
+            "name":"Pair",
+            "combination":"2-card"
+        },
+        {
+            "name": "Two-Pair",
+            "combination": "2+2"
+        },
+        {
+            "name": "Three of a kind",
+            "combination": "3-card"
+        },
+        {
+            "name": "Straight",
+            "combination": "straight"
+        },
+        {
+            "name": "Flush",
+            "combination": "flush"
+        },
+        {
+            "name": "Full-House",
+            "combination": "3+2"
+        },
+        {
+            "name": "Four of a kind",
+            "combination": "4-card"
+        },
+        {
+            "name": "Five of a kind",
+            "combination": "5-card"
+        },
+        {
+            "name": "Straight Flush",
+            "combination": "poker"
+        }
+    ]
+}

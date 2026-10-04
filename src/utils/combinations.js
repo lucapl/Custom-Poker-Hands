@@ -1,4 +1,5 @@
-import {combinations, factorial} from "./utils/math.js";
+import {combinations, factorial} from "./math.js";
+import {Counter} from "./structure.js";
 
 export function totalCards(deck){
     return deck["ranks"].length*deck["suits"].length*deck["decks"];
@@ -19,6 +20,8 @@ export function handCombinations(handName, handSize, deck){
         return combosCombinations(combos,handSize,deck);
     }else if (handName == "poker"){
         return straightCombinations(handSize,true,-1,deck);
+    }else if (handName == "all"){
+        return combinations(totalCards(deck),handSize);
     }
     throw new Error("The name '"+handName+"' is not a valid poker hand");
 }
@@ -47,9 +50,9 @@ export function straightCombinations(straightSize, isSuited, handSize, deck){
         }
         //ranks = ranks.filter((rank)=> ["J","Q","K"].contains(rank));
     }
-    let suits = deck["suits"].length*deck["decks"];
+    let suits = deck["decks"]*(isSuited?1:deck["suits"].length);
 
-    let r = 1;
+    let r = isSuited?deck["suits"].length:1;
     let loops = -1;
     for (let i = 0; i < straightSize; i++){
         if (i%totalRanks == 0){
@@ -77,10 +80,26 @@ export function combosCombinations(combos,handSize,deck){
 
     let r = 1;
     let _sum = 0;
-    for (let i = 0; i<combos.length;i++){
-        r *= combinations(suits*decks,combos[i]);
-        _sum += combos[i];
+    const counted = Counter(combos);
+    const numbers = Object.keys(counted);
+    for (let i = 0; i<numbers.length;i++){
+        r *= combinations(ranks-i,counted[numbers[i]]);
+        r *= combinations(suits*decks,Number(numbers[i]))**counted[numbers[i]];
+        _sum += counted[numbers[i]]*numbers[i];
     }
 
-    return combinations(ranks,combos.length) * r * combinations(ranks-combos.length,handSize-_sum) * (combinations(suits*decks,1)**(handSize-_sum));
+    if(_sum > handSize){
+        return 0;
+    }
+
+    return r * combinations(ranks-combos.length,handSize-_sum) * (combinations(suits*decks,1)**(handSize-_sum));
+}
+
+export function normalizeHighCard(handInfos,allCombinations){
+    const noHighCard = handInfos.filter((info)=>{info.combination!="1-card"});
+    const _sum = noHighCard.reduce((accumulator, currentValue) => accumulator + currentValue.frequency,0)
+
+    const i = handInfos.findIndex((info)=>{info.combination=="1-card"});
+    handInfos[i].frequency = allCombinations-_sum;
+    handInfos[i].probability = handInfos[i].frequency/allCombinations;
 }

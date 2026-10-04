@@ -3,13 +3,40 @@
     <head>
         <script type="module">
             import {handCombinations} from "./src/utils/combinations.js";
-            const response = await fetch("./config/cards.json");
-            const deck = await response.json();
+            import {handCard} from "./src/view/handCard.js";
+            const response1 = await fetch("./config/cards.json");
+            const deck = await response1.json();
+            const response2 = await fetch("./config/hands.json");
+            const hands = (await response2.json())["hands"];
 
-            document.getElementById("output").textContent = handCombinations("3+2",5,deck); 
+            const handSize = 5;
+            const totalCombos = handCombinations("all",handSize,deck);
+            const precision = 1e4;
+
+            const handCardInfos = hands.map((hand)=>{
+                const combo = hand.combination;
+                const frequency = handCombinations(combo,handSize,deck);
+                return {
+                    "name":hand.name,
+                    "combination": combo,
+                    "frequency":frequency,
+                    "probability":Math.round((frequency/totalCombos)*100*precision)/precision,
+                }
+            }).sort((card1,card2)=>(card1.probability-card2.probability));
+
+
+            const handCards = handCardInfos.map((info)=>handCard(info));
+            const handList = document.getElementById("hand-list");
+            handList.innerHTML = handCards.join("");
+            document.getElementById("total").innerHTML = `Total Combinations: ${totalCombos}`;
+
         </script>
     </head>
     <body>
-        <a id="output"></a>
+        <div id="total">
+        </div>
+        <div id="hand-list"" class="hand-list">
+
+        </div>
     </body>
 </html>
